@@ -59,3 +59,27 @@ exports.getCustomerById = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// @desc    Update customer
+// @route   PUT /api/customers/:id
+// @access  Private
+exports.updateCustomer = async (req, res) => {
+  const { name, phone, address } = req.body;
+
+  try {
+    const customer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      { name, phone, address },
+      { new: true, runValidators: true }
+    );
+
+    if (!customer)
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer not found" });
+    res.json({ success: true, customer });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

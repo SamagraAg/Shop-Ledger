@@ -6,7 +6,7 @@ const {
   createCustomer,
   getAllCustomers,
   getCustomerById,
-  //   updateCustomer,
+  updateCustomer,
   //   deleteCustomer
 } = require("../controllers/customer.controller.js");
 
@@ -28,5 +28,8 @@ router.post("/", auth, customerValidation, createCustomer);
 // READ
 router.get("/", auth, getAllCustomers);
 router.get("/:id", auth, getCustomerById);
+
+// UPDATE
+router.put("/:id", auth, customerValidation, updateCustomer);
 
 module.exports = router;
