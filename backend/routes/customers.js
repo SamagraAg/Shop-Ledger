@@ -7,7 +7,7 @@ const {
   getAllCustomers,
   getCustomerById,
   updateCustomer,
-  //   deleteCustomer
+  deleteCustomer,
 } = require("../controllers/customer.controller.js");
 
 const router = express.Router();
@@ -31,5 +31,8 @@ router.get("/:id", auth, getCustomerById);
 
 // UPDATE
 router.put("/:id", auth, customerValidation, updateCustomer);
+
+// DELETE
+router.delete("/:id", auth, deleteCustomer);
 
 module.exports = router;
