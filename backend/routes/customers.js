@@ -15,8 +15,11 @@ const router = express.Router();
 // ── Defining reusable validation rules for POST and PUT ─────────────────────
 const customerValidation = [
   body("name").notEmpty().withMessage("Name is required").trim().escape(),
-  body("phone").optional({ checkFalsy: true }).isMobilePhone().withMessage("Invalid phone"),
-  body("address").optional({ checkFalsy: true }).trim().escape()
+  body("phone")
+    .optional({ checkFalsy: true })
+    .isMobilePhone()
+    .withMessage("Invalid phone"),
+  body("address").optional({ checkFalsy: true }).trim().escape(),
 ];
 
 // CREATE

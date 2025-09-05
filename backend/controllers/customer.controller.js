@@ -8,17 +8,20 @@ exports.createCustomer = async (req, res) => {
   // ── validate input ────────────────────────────────────────────
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ message: "Invalid datza", errors: errors.array() });
+    return res.status(400).json({
+      success: false,
+      message: "Invalid data",
+      errors: errors.array(),
+    });
   }
 
   const { name, phone, address } = req.body;
 
   try {
     const customer = await Customer.create({ name, phone, address });
-    res.status(201).json(customer);
+    res.status(201).json({ success: true, customer });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
