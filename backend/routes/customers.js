@@ -4,8 +4,8 @@ const auth = require("../middleware/auth.js");
 
 const {
   createCustomer,
-  //   getAllCustomers,
-  //   getCustomerById,
+  getAllCustomers,
+  getCustomerById,
   //   updateCustomer,
   //   deleteCustomer
 } = require("../controllers/customer.controller.js");
@@ -24,5 +24,9 @@ const customerValidation = [
 
 // CREATE
 router.post("/", auth, customerValidation, createCustomer);
+
+// READ
+router.get("/", auth, getAllCustomers);
+router.get("/:id", auth, getCustomerById);
 
 module.exports = router;
