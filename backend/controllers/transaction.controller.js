@@ -81,6 +81,29 @@ exports.getTransactionsByCustomer = async (req, res) => {
     res.status(200).json({ success: true, txns });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false,message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+//@route DELETE  /api/transactions/:id
+exports.deleteTransaction = async (req, res) => {
+  try {
+    // 1. remove the transaction
+    const txn = await Transaction.findByIdAndDelete(req.params.id);
+    if (!txn)
+      return res
+        .status(404)
+        .json({ success: false, message: "Transaction not found" });
+
+    // 2. recalc new balance and return it
+    const balance = await recalcBalance(txn.customerId);
+    res.json({
+      success: true,
+      message: "Transaction deleted",
+      currentBalance: balance,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
