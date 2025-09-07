@@ -18,8 +18,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', require('./routes/auth.js'));
-app.use('/api/customers', require('./routes/customers'));
-// app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/customers', require('./routes/customers.js'));
+app.use('/api/transactions', require('./routes/transactions.js'));
 
 // Basic route
 app.get("/", (req, res) => {

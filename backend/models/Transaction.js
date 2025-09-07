@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["debt", "payment"],
+      enum: ["debt", "payment"], // debt → money owed; payment → money received
       required: true,
     },
     amount: {
@@ -26,9 +26,7 @@ const transactionSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Transaction", transactionSchema);
