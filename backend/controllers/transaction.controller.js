@@ -34,9 +34,11 @@ exports.createTransaction = async (req, res) => {
   // ── validation ───────────────────────────────────────────────
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .json({ message: "Invalid data", errors: errors.array() });
+    return res.status(400).json({
+      success: false,
+      message: "Invalid data",
+      errors: errors.array(),
+    });
   }
 
   const { customerId, type, amount, description, date } = req.body;
@@ -61,9 +63,11 @@ exports.createTransaction = async (req, res) => {
     // 3. Return transaction plus new balance
     const balance = await recalcBalance(customerId);
 
-    res.status(201).json({ ...txn.toObject(), currentBalance: balance });
+    res
+      .status(201)
+      .json({ ...txn.toObject(), currentBalance: balance, success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
