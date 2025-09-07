@@ -107,3 +107,27 @@ exports.deleteTransaction = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+//@route PUT  /api/transactions/:id  (full replace, not partial)
+exports.updateTransaction = async (req, res) => {
+  const { type, amount, description, date } = req.body;
+  try {
+    // 1. update the document
+    const txn = await Transaction.findByIdAndUpdate(
+      req.params.id,
+      { type, amount, description, date },
+      { new: true, runValidators: true }
+    );
+    if (!txn)
+      return res
+        .status(404)
+        .json({ success: false, message: "Transaction not found" });
+
+    // 2. recalc balance after the edit
+    const balance = await recalcBalance(txn.customerId);
+    res.json({ success: true, ...txn.toObject(), currentBalance: balance });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};

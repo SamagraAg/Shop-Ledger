@@ -4,7 +4,7 @@ const auth = require("../middleware/auth");
 const {
   createTransaction,
   getTransactionsByCustomer,
-  // updateTransaction,
+  updateTransaction,
   deleteTransaction,
 } = require("../controllers/transaction.controller.js");
 
@@ -29,5 +29,18 @@ router.get("/customer/:id", auth, getTransactionsByCustomer);
 
 // DELETE
 router.delete("/:id", auth, deleteTransaction);
+
+// UPDATE (full replace)
+router.put(
+  "/:id",
+  auth,
+  [
+    body("type").isIn(["debt", "payment"]).withMessage("Type must be debt or payment"),
+    body("amount").isFloat({ gt: 0 }).withMessage("Amount must be > 0"),
+    body("description").optional({ checkFalsy: true }).trim().escape(),
+    body("date").optional({ checkFalsy: true }).isISO8601().toDate()
+  ],
+  updateTransaction
+);
 
 module.exports = router;
