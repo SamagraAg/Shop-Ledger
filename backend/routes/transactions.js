@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 const auth = require("../middleware/auth");
 const {
   createTransaction,
-//   getTransactionsByCustomer
+  getTransactionsByCustomer
 } = require("../controllers/transaction.controller.js");
 
 const router = express.Router();
@@ -21,6 +21,6 @@ const txnValidation = [
 router.post("/", auth, txnValidation, createTransaction);
 
 // READ by customer
-// router.get("/customer/:id", auth, getTransactionsByCustomer);
+router.get("/customer/:id", auth, getTransactionsByCustomer);
 
 module.exports = router;

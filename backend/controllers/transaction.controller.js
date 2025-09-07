@@ -71,3 +71,16 @@ exports.createTransaction = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// @route GET /api/transactions/customer/:id
+exports.getTransactionsByCustomer = async (req, res) => {
+  try {
+    const txns = await Transaction.find({ customerId: req.params.id }).sort({
+      date: -1,
+    });
+    res.status(200).json({ success: true, txns });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false,message: "Server error" });
+  }
+};
