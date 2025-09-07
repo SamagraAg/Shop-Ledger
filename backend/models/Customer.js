@@ -22,8 +22,8 @@ const customerSchema = new mongoose.Schema(
   }
 );
 
-// Virtual for current balance (calculated from transactions)
-customerSchema.virtual("currentBalance", {
+// Fetches all customer transactions when populated
+customerSchema.virtual("transactions", {
   ref: "Transaction",
   localField: "_id",
   foreignField: "customerId",
