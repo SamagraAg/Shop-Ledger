@@ -10,53 +10,60 @@ const CustomerDetail = () => {
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showTxnForm, setShowTxnForm] = useState(false);
   const [txnForm, setTxnForm] = useState({
     type: 'debt',
     amount: '',
     description: '',
-    date: ''
+    date: new Date().toISOString().split('T')[0]
   });
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Fetch customer data & transactions
   useEffect(() => {
     fetchCustomer();
-    // Show "add transaction" if coming from dashboard quick link
     if (location.search.includes('action=add-transaction')) {
-      document.getElementById('txn-form')?.scrollIntoView({ behavior: 'smooth' });
+      setShowTxnForm(true);
     }
-  }, [id]);
+  }, [id, location]);
 
   const fetchCustomer = async () => {
     setLoading(true);
     setError('');
     try {
-      const custResp = await customerAPI.getById(id);
+      const [custResp, txnResp] = await Promise.all([
+        customerAPI.getById(id),
+        transactionAPI.getByCustomer(id)
+      ]);
+      
       if (custResp.data.success) {
         setCustomer(custResp.data.customer);
       } else {
         setError('Customer not found');
+        return;
       }
-      const txnResp = await transactionAPI.getByCustomer(id);
+      
       if (txnResp.data.success) {
         setTransactions(txnResp.data.txns);
-        // Calculate balance
         const bal = txnResp.data.txns.reduce((total, txn) => 
           txn.type === 'debt' ? total + txn.amount : total - txn.amount, 0
         );
         setBalance(bal);
       }
+      else {
+        setError('Transactions not found');
+        return;
+      }
     } catch (err) {
-      setError('Failed to load customer data.');
+      console.error('Error fetching data:', err);
+      setError('Failed to load customer data');
     } finally {
       setLoading(false);
     }
   };
 
-  // Format balance for UI
   const formatBalance = (bal) => {
     const absBal = Math.abs(bal);
     if (bal > 0) return { text: `₹${absBal.toFixed(2)}`, type: 'debt', label: 'Owes' };
@@ -64,7 +71,6 @@ const CustomerDetail = () => {
     return { text: '₹0.00', type: 'neutral', label: 'Clear' };
   };
 
-  // Handle transaction form input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setTxnForm(prev => ({ ...prev, [name]: value }));
@@ -73,193 +79,294 @@ const CustomerDetail = () => {
     }
   };
 
-  // Validate transaction form
   const validateTxnForm = () => {
     const errors = {};
-    if (!txnForm.type) errors.type = 'Type required';
-    if (!txnForm.amount || Number(txnForm.amount) <= 0)
-      errors.amount = 'Amount must be positive';
-    if (txnForm.date && isNaN(Date.parse(txnForm.date)))
-      errors.date = 'Enter valid date';
+    if (!txnForm.amount || Number(txnForm.amount) <= 0) {
+      errors.amount = 'Amount must be greater than 0';
+    }
     return errors;
   };
 
-  // Add new transaction
   const handleTxnSubmit = async (e) => {
     e.preventDefault();
-    setFormErrors({});
     const errors = validateTxnForm();
     if (Object.keys(errors).length) {
       setFormErrors(errors);
       return;
     }
+
     setIsSubmitting(true);
     try {
       const payload = {
         ...txnForm,
         customerId: customer._id,
-        amount: Number(txnForm.amount),
-        date: txnForm.date || new Date().toISOString()
+        amount: Number(txnForm.amount)
       };
+      
       const resp = await transactionAPI.create(payload);
       if (resp.data.success) {
-        setSuccess('Transaction added!');
-        setTxnForm({ type: 'debt', amount: '', description: '', date: '' });
-        // Refresh transactions
-        fetchCustomer();
-        setTimeout(() => setSuccess(''), 1600);
-      } else {
-        setError(resp.data.message || 'Failed to add transaction');
+        setSuccess('Transaction added successfully!');
+        setTxnForm({
+          type: 'debt',
+          amount: '',
+          description: '',
+          date: new Date().toISOString().split('T')[0]
+        });
+        setShowTxnForm(false);
+        await fetchCustomer();
+        setTimeout(() => setSuccess(''), 3000);
       }
     } catch (err) {
-      setError('Error adding transaction');
+      console.error('Error adding transaction:', err);
+      setFormErrors({ general: 'Failed to add transaction' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handle customer deletion
   const handleDeleteCustomer = async () => {
-    if (!window.confirm('Are you sure you want to delete this customer?')) return;
+    if (!window.confirm(`Are you sure you want to delete ${customer.name}? This action cannot be undone.`)) {
+      return;
+    }
     try {
-      const resp = await customerAPI.delete(customer._id);
-      if (resp.data.success) {
-        navigate('/'); // Back to dashboard
-      } else {
-        setError('Failed to delete customer.');
-      }
+      await customerAPI.delete(customer._id);
+      navigate('/');
     } catch (err) {
-      setError('Server error during delete.');
+      setError('Failed to delete customer');
     }
   };
 
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
   if (loading) {
-    return <div className="dashboard-loading"><span className="spinner">Loading...</span></div>;
+    return (
+      <div className="customer-detail-loading">
+        <div className="spinner">Loading customer details...</div>
+      </div>
+    );
   }
-  if (error) {
-    return <div className="error-message general-error">{error}</div>;
+
+  if (error && !customer) {
+    return (
+      <div className="customer-detail-error">
+        <div className="error-card">
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button onClick={() => navigate('/')} className="back-btn">
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
   }
+
   if (!customer) return null;
 
   const bal = formatBalance(balance);
 
   return (
     <div className="customer-detail">
-      <div className="customer-header">
-        <div>
-          <h1>{customer.name}</h1>
-          <div className="customer-meta">
-            {customer.phone && <span>📞 {customer.phone}</span>}
-            {customer.address && <span>📍 {customer.address}</span>}
+      {/* Header Section */}
+      <div className="customer-detail-header">
+        <div className="customer-info-card">
+          <div className="customer-primary-info">
+            <h1 className="customer-name">{customer.name}</h1>
+            <div className="customer-meta">
+              {customer.phone && (
+                <span className="meta-item">
+                  <span className="meta-icon">📞</span>
+                  {customer.phone}
+                </span>
+              )}
+              {customer.address && (
+                <span className="meta-item">
+                  <span className="meta-icon">📍</span>
+                  {customer.address}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="customer-actions">
+            <button 
+              className="action-btn primary"
+              onClick={() => setShowTxnForm(!showTxnForm)}
+            >
+              {showTxnForm ? 'Cancel' : '+ Add Transaction'}
+            </button>
+            <button className="action-btn danger" onClick={handleDeleteCustomer}>
+              Delete Customer
+            </button>
           </div>
         </div>
-        <button className="delete-customer-btn" onClick={handleDeleteCustomer}>
-          Delete Customer
-        </button>
+
+        {/* Balance Card */}
+        <div className={`balance-card ${bal.type}`}>
+          <div className="balance-content">
+            <span className="balance-label">{bal.label}</span>
+            <span className="balance-amount">{bal.text}</span>
+          </div>
+        </div>
       </div>
 
-      <div className={`balance-box ${bal.type}`}>
-        <span className="balance-amount">{bal.text}</span>
-        <span className="balance-label">{bal.label}</span>
-      </div>
-
-      {/* Transaction History */}
-      <div className="txn-history">
-        <h2>Transaction History</h2>
-        {transactions.length === 0 ? (
-          <p className="txn-empty">No transactions yet for this customer.</p>
-        ) : (
-          <table className="txn-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map(txn => (
-                <tr key={txn._id}>
-                  <td>{new Date(txn.date).toLocaleDateString()}</td>
-                  <td className={txn.type}>{txn.type === 'debt' ? 'Debt' : 'Payment'}</td>
-                  <td>{txn.amount}</td>
-                  <td>{txn.description}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {/* Success Message */}
+      {success && (
+        <div className="success-notification">
+          {success}
+        </div>
+      )}
 
       {/* Add Transaction Form */}
-      <div id="txn-form" className="add-txn-form">
-        <h2>Add Transaction</h2>
-        {success && <div className="success-message">{success}</div>}
-        <form onSubmit={handleTxnSubmit}>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="type">Type *</label>
-              <select
-                id="type"
-                name="type"
-                value={txnForm.type}
-                onChange={handleInputChange}
+      {showTxnForm && (
+        <div className="transaction-form-card">
+          <h2>Add New Transaction</h2>
+          <form onSubmit={handleTxnSubmit} className="transaction-form">
+            {formErrors.general && (
+              <div className="error-message general-error">
+                {formErrors.general}
+              </div>
+            )}
+            
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="type">Transaction Type</label>
+                <select
+                  id="type"
+                  name="type"
+                  value={txnForm.type}
+                  onChange={handleInputChange}
+                  className="form-select"
+                  disabled={isSubmitting}
+                >
+                  <option value="debt">Debt</option>
+                  <option value="payment">Payment</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="amount">Amount *</label>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  value={txnForm.amount}
+                  onChange={handleInputChange}
+                  className={`form-input ${formErrors.amount ? 'error' : ''}`}
+                  placeholder="Enter amount"
+                  min="1"
+                  step="1"
+                  disabled={isSubmitting}
+                />
+                {formErrors.amount && (
+                  <span className="error-message">{formErrors.amount}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="description">Description</label>
+                <input
+                  type="text"
+                  id="description"
+                  name="description"
+                  value={txnForm.description}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Optional description"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="date">Date</label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={txnForm.date}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="cancel-btn"
+                onClick={() => {
+                  setShowTxnForm(false);
+                  setFormErrors({});
+                }}
                 disabled={isSubmitting}
               >
-                <option value="debt">Debt</option>
-                <option value="payment">Payment</option>
-              </select>
-              {formErrors.type && <span className="error-message">{formErrors.type}</span>}
-            </div>
-            <div className="form-group">
-              <label htmlFor="amount">Amount *</label>
-              <input
-                type="number"
-                id="amount"
-                name="amount"
-                value={txnForm.amount}
-                onChange={handleInputChange}
-                min="0"
-                step="1"
-                placeholder="Enter amount"
-                required
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="submit-btn"
                 disabled={isSubmitting}
-                className={formErrors.amount ? 'error' : ''}
-              />
-              {formErrors.amount && <span className="error-message">{formErrors.amount}</span>}
+              >
+                {isSubmitting ? 'Adding...' : 'Add Transaction'}
+              </button>
             </div>
+          </form>
+        </div>
+      )}
+
+      {/* Transaction History */}
+      <div className="transaction-history-card">
+        <div className="history-header">
+          <h2>Transaction History</h2>
+          <span className="transaction-count">
+            {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {transactions.length === 0 ? (
+          <div className="empty-transactions">
+            <div className="empty-icon">📝</div>
+            <h3>No transactions yet</h3>
+            <p>Add the first transaction to start tracking this customer's account.</p>
+            <button 
+              className="add-first-btn"
+              onClick={() => setShowTxnForm(true)}
+            >
+              + Add First Transaction
+            </button>
           </div>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                value={txnForm.description}
-                onChange={handleInputChange}
-                placeholder="Optional details"
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="date">Date</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={txnForm.date}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-              />
-              {formErrors.date && <span className="error-message">{formErrors.date}</span>}
-            </div>
+        ) : (
+          <div className="transactions-list">
+            {transactions.map(txn => (
+              <div key={txn._id} className={`transaction-item ${txn.type}`}>
+                <div className="transaction-main">
+                  <div className="transaction-type-badge">
+                    <span className={`type-indicator ${txn.type}`}>
+                      {txn.type === 'debt' ? '↗️' : '↙️'}
+                    </span>
+                    <span className="type-text">
+                      {txn.type === 'debt' ? 'Debt' : 'Payment'}
+                    </span>
+                  </div>
+                  <div className="transaction-amount">
+                    ₹{txn.amount.toFixed(2)}
+                  </div>
+                </div>
+                <div className="transaction-details">
+                  <span className="transaction-date">{formatDate(txn.date)}</span>
+                  {txn.description && (
+                    <span className="transaction-desc">{txn.description}</span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-          <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Adding...' : 'Add Transaction'}
-          </button>
-        </form>
+        )}
       </div>
     </div>
   );
