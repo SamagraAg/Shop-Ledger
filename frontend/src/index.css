@@ -672,3 +672,105 @@ body {
     flex-direction: column;
   }
 }
+
+/* CUSTOMER DETAIL STYLES */
+
+.customer-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .customer-detail {
+    padding: 1rem 0.25rem;
+  }
+  .customer-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .balance-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 0.25rem;
+  }
+  .txn-table, .txn-table thead, .txn-table tbody, .txn-table tr, .txn-table th, .txn-table td {
+    display: block;
+    width: 100%;
+  }
+  .txn-table th {
+    display: none;
+  }
+  .txn-table tr {
+    margin-bottom: 1.2rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.03);
+    padding: 1rem;
+  }
+  .txn-table td {
+    font-size: 1rem;
+    padding: 0.4rem 0;
+    border-bottom: none;
+    height: auto;
+  }
+  .txn-table td::before {
+    font-weight: 700;
+    display: inline-block;
+    min-width: 100px;
+  }
+  .txn-table td:nth-of-type(1)::before { content: "Date: "; }
+  .txn-table td:nth-of-type(2)::before { content: "Type: "; }
+  .txn-table td:nth-of-type(3)::before { content: "Amount: "; }
+  .txn-table td:nth-of-type(4)::before { content: "Description: "; }
+  .add-txn-form { padding: 1rem; }
+  .form-row { grid-template-columns: 1fr; gap: 1rem; }
+  .submit-btn, .delete-customer-btn { width: 100%; margin-top: 1rem; }
+}
+
+/* Card style upgrades */
+.customer-header, .balance-box, .add-txn-form, .txn-history {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.06);
+  padding: 1.5rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.customer-header h1 {
+  font-size: 2rem;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.balance-box .balance-label {
+  font-size: 1.1rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+.balance-box.debt .balance-label { background: #fee2e2; color: #dc2626; }
+.balance-box.credit .balance-label { background: #d1fae5; color: #059669; }
+.balance-box.neutral .balance-label { background: #e0e7ff; color: #64748b; }
+
+.txn-history h2 {
+  font-size: 1.25rem;
+  color: #2563eb;
+}
+.success-message {
+  background: #d1fae5;
+  color: #047857;
+  border-radius: 6px;
+}
+
+/* Button hover and radius */
+.submit-btn, .delete-customer-btn {
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.submit-btn:hover { background-color: #1d4ed8; }
+.delete-customer-btn:hover { background-color: #dc2626; }
+
+
+
