@@ -1194,3 +1194,115 @@ body {
     padding: 1rem;
   }
 }
+/* ===== EDIT CUSTOMER FORM ===== */
+.edit-customer-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e0e7ff;
+}
+
+.edit-customer-card h2 {
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.edit-customer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ===== TRANSACTION ACTIONS ===== */
+.transaction-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.edit-txn-btn,
+.delete-txn-btn {
+  padding: 0.5rem 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.edit-txn-btn {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.edit-txn-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.delete-txn-btn {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.delete-txn-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* ===== ENHANCED ACTION BUTTONS ===== */
+.action-btn.secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.action-btn.secondary:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+/* ===== RESPONSIVE ENHANCEMENTS ===== */
+@media (max-width: 768px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .transaction-actions {
+    flex-direction: column;
+  }
+  
+  .edit-txn-btn,
+  .delete-txn-btn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .customer-actions .action-btn {
+    width: 100%;
+  }
+}
