@@ -1,7 +1,7 @@
-import React from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import Header from './Header';
+import React from "react";
+import { Outlet, Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import Header from "./Header";
 
 const Layout = () => {
   const { isAuthenticated, loading } = useAuth();

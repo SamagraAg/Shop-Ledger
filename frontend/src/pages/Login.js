@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { authAPI } from '../services/api';
+import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../services/api";
 
 const Login = () => {
   const { isAuthenticated, loading, dispatch } = useAuth();
   const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+    username: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,37 +19,37 @@ const Login = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
-    if (errors[name]) {   
-      setErrors(prev => ({
+    if (errors[name]) {
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
+      newErrors.username = "Username is required";
     }
-    
+
     if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     }
-    
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate form
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
@@ -62,29 +62,29 @@ const Login = () => {
 
     try {
       const response = await authAPI.login(formData);
-      
+
       if (response.data.success) {
         // Login successful
         dispatch({
-          type: 'LOGIN_SUCCESS',
+          type: "LOGIN_SUCCESS",
           payload: {
             token: response.data.token,
-            user: response.data.user
-          }
+            user: response.data.user,
+          },
         });
       } else {
-        setErrors({ general: 'Login failed. Please try again.' });
+        setErrors({ general: "Login failed. Please try again." });
       }
     } catch (error) {
-      console.error('Login error:', error);
-      
+      console.error("Login error:", error);
+
       // Handle different error scenarios
       if (error.response?.data?.message) {
         setErrors({ general: error.response.data.message });
       } else if (error.response?.status === 401) {
-        setErrors({ general: 'Invalid username or password' });
+        setErrors({ general: "Invalid username or password" });
       } else {
-        setErrors({ general: 'Network error. Please check your connection.' });
+        setErrors({ general: "Network error. Please check your connection." });
       }
     } finally {
       setIsSubmitting(false);
@@ -111,9 +111,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="login-form">
           {errors.general && (
-            <div className="error-message general-error">
-              {errors.general}
-            </div>
+            <div className="error-message general-error">{errors.general}</div>
           )}
 
           <div className="form-group">
@@ -124,7 +122,7 @@ const Login = () => {
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              className={errors.username ? 'error' : ''}
+              className={errors.username ? "error" : ""}
               placeholder="Enter your username"
               disabled={isSubmitting}
             />
@@ -141,7 +139,7 @@ const Login = () => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className={errors.password ? 'error' : ''}
+              className={errors.password ? "error" : ""}
               placeholder="Enter your password"
               disabled={isSubmitting}
             />
@@ -150,12 +148,12 @@ const Login = () => {
             )}
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="login-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Signing in...' : 'Sign In'}
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

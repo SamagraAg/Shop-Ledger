@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { customerAPI, transactionAPI } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { customerAPI, transactionAPI } from "../services/api";
 
 const Dashboard = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [customerBalances, setCustomerBalances] = useState({});
-  
+
   // New customer form state
   const [newCustomer, setNewCustomer] = useState({
-    name: '',
-    phone: '',
-    address: ''
+    name: "",
+    phone: "",
+    address: "",
   });
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,19 +27,19 @@ const Dashboard = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError("");
+
       const response = await customerAPI.getAll();
       if (response.data.success) {
         setCustomers(response.data.customers);
         // Fetch balances for each customer
         await fetchCustomerBalances(response.data.customers);
       } else {
-        setError('Failed to fetch customers');
+        setError("Failed to fetch customers");
       }
     } catch (err) {
-      console.error('Error fetching customers:', err);
-      setError('Failed to load customers. Please try again.');
+      console.error("Error fetching customers:", err);
+      setError("Failed to load customers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
   const fetchCustomerBalances = async (customerList) => {
     const balances = {};
-    
+
     // Fetch transactions for each customer to calculate balance
     for (const customer of customerList) {
       try {
@@ -55,8 +55,8 @@ const Dashboard = () => {
         if (txnResponse.data.success) {
           const transactions = txnResponse.data.txns;
           const balance = transactions.reduce((total, txn) => {
-            return txn.type === 'debt' 
-              ? total + txn.amount 
+            return txn.type === "debt"
+              ? total + txn.amount
               : total - txn.amount;
           }, 0);
           balances[customer._id] = balance;
@@ -66,50 +66,54 @@ const Dashboard = () => {
         balances[customer._id] = 0;
       }
     }
-    
+
     setCustomerBalances(balances);
   };
 
   // Filter customers based on search term
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.phone?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Handle new customer form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewCustomer(prev => ({
+    setNewCustomer((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear errors when user types
     if (formErrors[name]) {
-      setFormErrors(prev => ({
+      setFormErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!newCustomer.name.trim()) {
-      errors.name = 'Customer name is required';
+      errors.name = "Customer name is required";
     }
-    
-    if (newCustomer.phone && !/^\d{10}$/.test(newCustomer.phone.replace(/\D/g, ''))) {
-      errors.phone = 'Please enter a valid 10-digit phone number';
+
+    if (
+      newCustomer.phone &&
+      !/^\d{10}$/.test(newCustomer.phone.replace(/\D/g, ""))
+    ) {
+      errors.phone = "Please enter a valid 10-digit phone number";
     }
-    
+
     return errors;
   };
 
   const handleAddCustomer = async (e) => {
     e.preventDefault();
-    
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -123,14 +127,14 @@ const Dashboard = () => {
         // Refresh customer list
         await fetchCustomers();
         // Reset form
-        setNewCustomer({ name: '', phone: '', address: '' });
+        setNewCustomer({ name: "", phone: "", address: "" });
         setFormErrors({});
         setShowAddForm(false);
       }
     } catch (err) {
-      console.error('Error adding customer:', err);
-      setFormErrors({ 
-        general: err.response?.data?.message || 'Failed to add customer' 
+      console.error("Error adding customer:", err);
+      setFormErrors({
+        general: err.response?.data?.message || "Failed to add customer",
       });
     } finally {
       setIsSubmitting(false);
@@ -140,11 +144,15 @@ const Dashboard = () => {
   const formatBalance = (balance) => {
     const absBalance = Math.abs(balance);
     if (balance > 0) {
-      return { text: `₹${absBalance.toFixed(2)}`, type: 'debt', label: 'Owes' };
+      return { text: `₹${absBalance.toFixed(2)}`, type: "debt", label: "Owes" };
     } else if (balance < 0) {
-      return { text: `₹${absBalance.toFixed(2)}`, type: 'credit', label: 'Credit' };
+      return {
+        text: `₹${absBalance.toFixed(2)}`,
+        type: "credit",
+        label: "Credit",
+      };
     } else {
-      return { text: '₹0.00', type: 'neutral', label: 'Clear' };
+      return { text: "₹0.00", type: "neutral", label: "Clear" };
     }
   };
 
@@ -163,11 +171,11 @@ const Dashboard = () => {
           <h1>Customer Dashboard</h1>
           <p>Manage your customers and track their transactions</p>
         </div>
-        <button 
+        <button
           className="add-customer-btn"
           onClick={() => setShowAddForm(!showAddForm)}
         >
-          {showAddForm ? 'Cancel' : '+ Add Customer'}
+          {showAddForm ? "Cancel" : "+ Add Customer"}
         </button>
       </div>
 
@@ -181,7 +189,7 @@ const Dashboard = () => {
                 {formErrors.general}
               </div>
             )}
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="name">Customer Name *</label>
@@ -191,7 +199,7 @@ const Dashboard = () => {
                   name="name"
                   value={newCustomer.name}
                   onChange={handleInputChange}
-                  className={formErrors.name ? 'error' : ''}
+                  className={formErrors.name ? "error" : ""}
                   placeholder="Enter customer name"
                   disabled={isSubmitting}
                 />
@@ -199,7 +207,7 @@ const Dashboard = () => {
                   <span className="error-message">{formErrors.name}</span>
                 )}
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="phone">Phone Number *</label>
                 <input
@@ -208,7 +216,7 @@ const Dashboard = () => {
                   name="phone"
                   value={newCustomer.phone}
                   onChange={handleInputChange}
-                  className={formErrors.phone ? 'error' : ''}
+                  className={formErrors.phone ? "error" : ""}
                   placeholder="Enter phone number"
                   disabled={isSubmitting}
                 />
@@ -217,7 +225,7 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="address">Address</label>
               <input
@@ -230,25 +238,25 @@ const Dashboard = () => {
                 disabled={isSubmitting}
               />
             </div>
-            
+
             <div className="form-actions">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="cancel-btn"
                 onClick={() => {
                   setShowAddForm(false);
-                  setNewCustomer({ name: '', phone: '', address: '' });
+                  setNewCustomer({ name: "", phone: "", address: "" });
                   setFormErrors({});
                 }}
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-btn"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Adding...' : 'Add Customer'}
+                {isSubmitting ? "Adding..." : "Add Customer"}
               </button>
             </div>
           </form>
@@ -291,12 +299,12 @@ const Dashboard = () => {
         <div className="empty-state">
           <h3>No customers found</h3>
           <p>
-            {searchTerm 
-              ? 'Try adjusting your search terms' 
-              : 'Get started by adding your first customer'}
+            {searchTerm
+              ? "Try adjusting your search terms"
+              : "Get started by adding your first customer"}
           </p>
           {!searchTerm && !showAddForm && (
-            <button 
+            <button
               className="add-customer-btn"
               onClick={() => setShowAddForm(true)}
             >
@@ -306,7 +314,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="customer-grid">
-          {filteredCustomers.map(customer => {
+          {filteredCustomers.map((customer) => {
             const balance = formatBalance(customerBalances[customer._id] || 0);
             return (
               <div key={customer._id} className="customer-card">
@@ -319,22 +327,22 @@ const Dashboard = () => {
                     <p className="customer-address">📍 {customer.address}</p>
                   )}
                 </div>
-                
+
                 <div className="customer-balance">
                   <span className={`balance-amount ${balance.type}`}>
                     {balance.text}
                   </span>
                   <span className="balance-label">{balance.label}</span>
                 </div>
-                
+
                 <div className="customer-actions">
-                  <Link 
-                    to={`/customer/${customer._id}`} 
+                  <Link
+                    to={`/customer/${customer._id}`}
                     className="action-btn primary"
                   >
                     View Details
                   </Link>
-                  <Link 
+                  <Link
                     to={`/customer/${customer._id}?action=add-transaction`}
                     className="action-btn secondary"
                   >

@@ -12,8 +12,6 @@ code {
     monospace;
 } */
 
-
-
 /* ===== RESET & BASE STYLES ===== */
 * {
   margin: 0;
@@ -22,8 +20,8 @@ code {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -272,7 +270,7 @@ body {
 
 /* Add a simple spinning animation */
 .spinner::after {
-  content: '';
+  content: "";
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -284,7 +282,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -323,22 +323,37 @@ body {
   .login-container {
     padding: 0.5rem;
   }
-  
+
   .login-card {
     padding: 1.5rem;
   }
 }
 
 /* ===== UTILITY CLASSES ===== */
-.text-center { text-align: center; }
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.mb-3 { margin-bottom: 1.5rem; }
-.text-sm { font-size: 0.875rem; }
-.font-semibold { font-weight: 600; }
-.text-red-500 { color: #ef4444; }
-.text-blue-500 { color: #2563eb; }
-
+.text-center {
+  text-align: center;
+}
+.mb-1 {
+  margin-bottom: 0.5rem;
+}
+.mb-2 {
+  margin-bottom: 1rem;
+}
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.text-red-500 {
+  color: #ef4444;
+}
+.text-blue-500 {
+  color: #2563eb;
+}
 
 /* ===== DASHBOARD STYLES ===== */
 .dashboard {
@@ -1093,21 +1108,21 @@ body {
   .customer-detail-header {
     grid-template-columns: 1fr;
   }
-  
+
   .balance-card {
     min-width: auto;
   }
-  
+
   .customer-info-card {
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   .customer-actions {
     flex-direction: row;
     align-self: stretch;
   }
-  
+
   .action-btn {
     flex: 1;
   }
@@ -1117,44 +1132,44 @@ body {
   .customer-detail {
     padding: 0 0.5rem;
   }
-  
+
   .customer-info-card,
   .balance-card,
   .transaction-form-card,
   .transaction-history-card {
     padding: 1.5rem 1rem;
   }
-  
+
   .customer-name {
     font-size: 1.75rem;
   }
-  
+
   .customer-meta {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .history-header {
     flex-direction: column;
     gap: 0.75rem;
     align-items: flex-start;
   }
-  
+
   .transaction-main {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .transaction-details {
     flex-direction: column;
     align-items: flex-start;
@@ -1166,20 +1181,16 @@ body {
   .customer-actions {
     flex-direction: column;
   }
-  
+
   .balance-content {
     gap: 0.25rem;
   }
-  
+
   .balance-amount {
     font-size: 1.5rem;
   }
-  
+
   .transaction-item {
     padding: 1rem;
   }
 }
-
-
-
-

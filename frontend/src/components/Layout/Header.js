@@ -1,14 +1,14 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
   const { user, dispatch } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' });
-    navigate('/login');
+    dispatch({ type: "LOGOUT" });
+    navigate("/login");
   };
 
   return (
@@ -18,11 +18,15 @@ const Header = () => {
           <Link to="/">Shop Ledger</Link>
         </div>
         <nav className="nav">
-          <Link to="/" className="nav-link">Dashboard</Link>
-          <Link to="/export" className="nav-link">Export</Link>
+          <Link to="/" className="nav-link">
+            Dashboard
+          </Link>
+          <Link to="/export" className="nav-link">
+            Export
+          </Link>
         </nav>
         <div className="user-menu">
-          <span className="username">Welcome, {user?.username || 'Admin'}</span>
+          <span className="username">Welcome, {user?.username || "Admin"}</span>
           <button onClick={handleLogout} className="logout-btn">
             Logout
           </button>
