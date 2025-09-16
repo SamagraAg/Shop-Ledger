@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   const initialState = {
     token: localStorage.getItem("token"),
     user: null,
-    isAuthenticated: false,
+    isAuthenticated: true,
     loading: true,
   };
 
