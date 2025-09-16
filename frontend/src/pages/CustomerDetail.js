@@ -171,9 +171,18 @@ const CustomerDetail = () => {
 
   const validateCustomerForm = () => {
     const errors = {};
+
     if (!editCustomerForm.name.trim()) {
       errors.name = "Name is required";
     }
+
+    if (
+      editCustomerForm.phone &&
+      !/^\d{10}$/.test(editCustomerForm.phone.replace(/\D/g, ""))
+    ) {
+      errors.phone = "Please enter a valid 10-digit phone number";
+    }
+
     return errors;
   };
 
@@ -387,7 +396,6 @@ const CustomerDetail = () => {
                   onChange={handleEditCustomerInput}
                   className={`form-input ${formErrors.name ? "error" : ""}`}
                   disabled={isSubmitting}
-                  required
                 />
                 {formErrors.name && (
                   <span className="error-message">{formErrors.name}</span>
@@ -401,9 +409,12 @@ const CustomerDetail = () => {
                   type="tel"
                   value={editCustomerForm.phone}
                   onChange={handleEditCustomerInput}
-                  className="form-input"
+                  className={`form-input ${formErrors.phone ? "error" : ""}`}
                   disabled={isSubmitting}
                 />
+                 {formErrors.phone && (
+                  <span className="error-message">{formErrors.phone}</span>
+                )}
               </div>
             </div>
             <div className="form-group">
