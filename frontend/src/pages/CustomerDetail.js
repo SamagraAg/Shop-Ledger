@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { customerAPI, transactionAPI } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { customerAPI, transactionAPI } from "../services/api";
 
 const CustomerDetail = () => {
   const { id } = useParams();
@@ -12,53 +12,54 @@ const CustomerDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showTxnForm, setShowTxnForm] = useState(false);
   const [txnForm, setTxnForm] = useState({
-    type: 'debt',
-    amount: '',
-    description: '',
-    date: new Date().toISOString().split('T')[0]
+    type: "debt",
+    amount: "",
+    description: "",
+    date: new Date().toISOString().split("T")[0],
   });
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     fetchCustomer();
-    if (location.search.includes('action=add-transaction')) {
+    if (location.search.includes("action=add-transaction")) {
       setShowTxnForm(true);
     }
   }, [id, location]);
 
   const fetchCustomer = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const [custResp, txnResp] = await Promise.all([
         customerAPI.getById(id),
-        transactionAPI.getByCustomer(id)
+        transactionAPI.getByCustomer(id),
       ]);
-      
+
       if (custResp.data.success) {
         setCustomer(custResp.data.customer);
       } else {
-        setError('Customer not found');
+        setError("Customer not found");
         return;
       }
-      
+
       if (txnResp.data.success) {
         setTransactions(txnResp.data.txns);
-        const bal = txnResp.data.txns.reduce((total, txn) => 
-          txn.type === 'debt' ? total + txn.amount : total - txn.amount, 0
+        const bal = txnResp.data.txns.reduce(
+          (total, txn) =>
+            txn.type === "debt" ? total + txn.amount : total - txn.amount,
+          0
         );
         setBalance(bal);
-      }
-      else {
-        setError('Transactions not found');
+      } else {
+        setError("Transactions not found");
         return;
       }
     } catch (err) {
-      console.error('Error fetching data:', err);
-      setError('Failed to load customer data');
+      console.error("Error fetching data:", err);
+      setError("Failed to load customer data");
     } finally {
       setLoading(false);
     }
@@ -66,23 +67,25 @@ const CustomerDetail = () => {
 
   const formatBalance = (bal) => {
     const absBal = Math.abs(bal);
-    if (bal > 0) return { text: `₹${absBal.toFixed(2)}`, type: 'debt', label: 'Owes' };
-    if (bal < 0) return { text: `₹${absBal.toFixed(2)}`, type: 'credit', label: 'Credit' };
-    return { text: '₹0.00', type: 'neutral', label: 'Clear' };
+    if (bal > 0)
+      return { text: `₹${absBal.toFixed(2)}`, type: "debt", label: "Owes" };
+    if (bal < 0)
+      return { text: `₹${absBal.toFixed(2)}`, type: "credit", label: "Credit" };
+    return { text: "₹0.00", type: "neutral", label: "Clear" };
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setTxnForm(prev => ({ ...prev, [name]: value }));
+    setTxnForm((prev) => ({ ...prev, [name]: value }));
     if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const validateTxnForm = () => {
     const errors = {};
     if (!txnForm.amount || Number(txnForm.amount) <= 0) {
-      errors.amount = 'Amount must be greater than 0';
+      errors.amount = "Amount must be greater than 0";
     }
     return errors;
   };
@@ -100,47 +103,51 @@ const CustomerDetail = () => {
       const payload = {
         ...txnForm,
         customerId: customer._id,
-        amount: Number(txnForm.amount)
+        amount: Number(txnForm.amount),
       };
-      
+
       const resp = await transactionAPI.create(payload);
       if (resp.data.success) {
-        setSuccess('Transaction added successfully!');
+        setSuccess("Transaction added successfully!");
         setTxnForm({
-          type: 'debt',
-          amount: '',
-          description: '',
-          date: new Date().toISOString().split('T')[0]
+          type: "debt",
+          amount: "",
+          description: "",
+          date: new Date().toISOString().split("T")[0],
         });
         setShowTxnForm(false);
         await fetchCustomer();
-        setTimeout(() => setSuccess(''), 3000);
+        setTimeout(() => setSuccess(""), 3000);
       }
     } catch (err) {
-      console.error('Error adding transaction:', err);
-      setFormErrors({ general: 'Failed to add transaction' });
+      console.error("Error adding transaction:", err);
+      setFormErrors({ general: "Failed to add transaction" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteCustomer = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${customer.name}? This action cannot be undone.`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${customer.name}? This action cannot be undone.`
+      )
+    ) {
       return;
     }
     try {
       await customerAPI.delete(customer._id);
-      navigate('/');
+      navigate("/");
     } catch (err) {
-      setError('Failed to delete customer');
+      setError("Failed to delete customer");
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -158,7 +165,7 @@ const CustomerDetail = () => {
         <div className="error-card">
           <h2>Error</h2>
           <p>{error}</p>
-          <button onClick={() => navigate('/')} className="back-btn">
+          <button onClick={() => navigate("/")} className="back-btn">
             Back to Dashboard
           </button>
         </div>
@@ -193,13 +200,16 @@ const CustomerDetail = () => {
             </div>
           </div>
           <div className="customer-actions">
-            <button 
+            <button
               className="action-btn primary"
               onClick={() => setShowTxnForm(!showTxnForm)}
             >
-              {showTxnForm ? 'Cancel' : '+ Add Transaction'}
+              {showTxnForm ? "Cancel" : "+ Add Transaction"}
             </button>
-            <button className="action-btn danger" onClick={handleDeleteCustomer}>
+            <button
+              className="action-btn danger"
+              onClick={handleDeleteCustomer}
+            >
               Delete Customer
             </button>
           </div>
@@ -215,11 +225,7 @@ const CustomerDetail = () => {
       </div>
 
       {/* Success Message */}
-      {success && (
-        <div className="success-notification">
-          {success}
-        </div>
-      )}
+      {success && <div className="success-notification">{success}</div>}
 
       {/* Add Transaction Form */}
       {showTxnForm && (
@@ -231,7 +237,7 @@ const CustomerDetail = () => {
                 {formErrors.general}
               </div>
             )}
-            
+
             <div className="form-grid">
               <div className="form-group">
                 <label htmlFor="type">Transaction Type</label>
@@ -256,7 +262,7 @@ const CustomerDetail = () => {
                   name="amount"
                   value={txnForm.amount}
                   onChange={handleInputChange}
-                  className={`form-input ${formErrors.amount ? 'error' : ''}`}
+                  className={`form-input ${formErrors.amount ? "error" : ""}`}
                   placeholder="Enter amount"
                   min="1"
                   step="1"
@@ -296,8 +302,8 @@ const CustomerDetail = () => {
             </div>
 
             <div className="form-actions">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="cancel-btn"
                 onClick={() => {
                   setShowTxnForm(false);
@@ -307,12 +313,12 @@ const CustomerDetail = () => {
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-btn"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Adding...' : 'Add Transaction'}
+                {isSubmitting ? "Adding..." : "Add Transaction"}
               </button>
             </div>
           </form>
@@ -324,7 +330,8 @@ const CustomerDetail = () => {
         <div className="history-header">
           <h2>Transaction History</h2>
           <span className="transaction-count">
-            {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+            {transactions.length} transaction
+            {transactions.length !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -332,8 +339,11 @@ const CustomerDetail = () => {
           <div className="empty-transactions">
             <div className="empty-icon">📝</div>
             <h3>No transactions yet</h3>
-            <p>Add the first transaction to start tracking this customer's account.</p>
-            <button 
+            <p>
+              Add the first transaction to start tracking this customer's
+              account.
+            </p>
+            <button
               className="add-first-btn"
               onClick={() => setShowTxnForm(true)}
             >
@@ -342,15 +352,15 @@ const CustomerDetail = () => {
           </div>
         ) : (
           <div className="transactions-list">
-            {transactions.map(txn => (
+            {transactions.map((txn) => (
               <div key={txn._id} className={`transaction-item ${txn.type}`}>
                 <div className="transaction-main">
                   <div className="transaction-type-badge">
                     <span className={`type-indicator ${txn.type}`}>
-                      {txn.type === 'debt' ? '↗️' : '↙️'}
+                      {txn.type === "debt" ? "↗️" : "↙️"}
                     </span>
                     <span className="type-text">
-                      {txn.type === 'debt' ? 'Debt' : 'Payment'}
+                      {txn.type === "debt" ? "Debt" : "Payment"}
                     </span>
                   </div>
                   <div className="transaction-amount">
@@ -358,7 +368,9 @@ const CustomerDetail = () => {
                   </div>
                 </div>
                 <div className="transaction-details">
-                  <span className="transaction-date">{formatDate(txn.date)}</span>
+                  <span className="transaction-date">
+                    {formatDate(txn.date)}
+                  </span>
                   {txn.description && (
                     <span className="transaction-desc">{txn.description}</span>
                   )}
