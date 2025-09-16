@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard.js";
 import CustomerDetail from "./pages/CustomerDetail.js";
 import Export from "./pages/Export.js";
 import "./index.css";
+import EditCustomer from "./components/Forms/EditCustomer.js";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="customer/:id" element={<CustomerDetail />} />
               <Route path="export" element={<Export />} />
+              <Route path="customer/:id/edit" element={<EditCustomer />} />
             </Route>
           </Routes>
         </div>
