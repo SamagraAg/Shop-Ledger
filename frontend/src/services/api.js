@@ -36,6 +36,8 @@ export const transactionAPI = {
   getByCustomer: (customerId) =>
     api.get(`/transactions/customer/${customerId}`),
   create: (transaction) => api.post("/transactions", transaction),
+  update: (id, transaction) => api.put(`/transactions/${id}`, transaction),
+  delete: (id) => api.delete(`/transactions/${id}`),
 };
 
 export default api;
