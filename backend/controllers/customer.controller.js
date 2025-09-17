@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import Customer from "../models/Customer";
+import Customer from "../models/Customer.js";
 
 // @desc    Create new customer
 // @route   POST /api/customers

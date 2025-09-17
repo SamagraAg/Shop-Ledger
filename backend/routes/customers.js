@@ -2,13 +2,13 @@ import express from "express";
 import { body } from "express-validator";
 import auth from "../middleware/auth.js";
 
-const {
+import {
   createCustomer,
   getAllCustomers,
   getCustomerById,
   updateCustomer,
   deleteCustomer,
-} = require("../controllers/customer.controller.js");
+} from "../controllers/customer.controller.js";
 
 const router = express.Router();
 

@@ -1,12 +1,12 @@
 import express from "express";
 import { body } from "express-validator";
 import auth from "../middleware/auth.js";
-const {
+import {
   createTransaction,
   getTransactionsByCustomer,
   updateTransaction,
   deleteTransaction,
-} = require("../controllers/transaction.controller.js");
+} from "../controllers/transaction.controller.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
-import Transaction from "../models/Transaction";
-import Customer from "../models/Customer";
+import Transaction from "../models/Transaction.js";
+import Customer from "../models/Customer.js";
 import mongoose from "mongoose";
 
 // Helper: recalculate balance after every insert
