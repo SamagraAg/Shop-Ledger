@@ -1,5 +1,5 @@
-const { verifyToken } = require("../config/jwt");
-const User = require("../models/User");
+import { verifyToken } from "../config/jwt";
+import User from "../models/User";
 
 const auth = async (req, res, next) => {
   try {

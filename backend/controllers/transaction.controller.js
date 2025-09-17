@@ -1,7 +1,7 @@
-const { validationResult } = require("express-validator");
-const Transaction = require("../models/Transaction");
-const Customer = require("../models/Customer");
-const mongoose = require("mongoose");
+import { validationResult } from "express-validator";
+import Transaction from "../models/Transaction";
+import Customer from "../models/Customer";
+import mongoose from "mongoose";
 
 // Helper: recalculate balance after every insert
 

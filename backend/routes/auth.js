@@ -1,7 +1,7 @@
-const express = require("express");
-const User = require("./../models/User.js");
-const { generateToken } = require("./../config/jwt.js");
-const { login, createAdmin } = require("./../controllers/auth.controller.js");
+import express from "express";
+import User from "./../models/User.js";
+import { generateToken } from "./../config/jwt.js";
+import { login, createAdmin } from "./../controllers/auth.controller.js";
 
 const router = express.Router();
 

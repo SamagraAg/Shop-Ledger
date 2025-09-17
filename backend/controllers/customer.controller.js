@@ -1,5 +1,5 @@
-const { validationResult } = require("express-validator");
-const Customer = require("../models/Customer");
+import { validationResult } from "express-validator";
+import Customer from "../models/Customer";
 
 // @desc    Create new customer
 // @route   POST /api/customers

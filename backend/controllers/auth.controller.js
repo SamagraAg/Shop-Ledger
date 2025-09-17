@@ -1,5 +1,5 @@
-const User = require("./../models/User.js");
-const { generateToken } = require("./../config/jwt.js");
+import User from "./../models/User.js";
+import { generateToken } from "./../config/jwt.js";
 
 const createAdmin = async (req, res) => {
   try {

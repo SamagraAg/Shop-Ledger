@@ -1,6 +1,6 @@
-const express = require("express");
-const { body } = require("express-validator");
-const auth = require("../middleware/auth.js");
+import express from "express";
+import { body } from "express-validator";
+import auth from "../middleware/auth.js";
 
 const {
   createCustomer,
