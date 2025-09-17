@@ -30,7 +30,7 @@ const recalcBalance = async (customerId) => {
 };
 
 // @route POST /api/transactions
-exports.createTransaction = async (req, res) => {
+const createTransaction = async (req, res) => {
   // ── validation ───────────────────────────────────────────────
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -73,7 +73,7 @@ exports.createTransaction = async (req, res) => {
 };
 
 // @route GET /api/transactions/customer/:id
-exports.getTransactionsByCustomer = async (req, res) => {
+const getTransactionsByCustomer = async (req, res) => {
   try {
     const txns = await Transaction.find({ customerId: req.params.id }).sort({
       date: -1,
@@ -86,7 +86,7 @@ exports.getTransactionsByCustomer = async (req, res) => {
 };
 
 //@route DELETE  /api/transactions/:id
-exports.deleteTransaction = async (req, res) => {
+const deleteTransaction = async (req, res) => {
   try {
     // 1. remove the transaction
     const txn = await Transaction.findByIdAndDelete(req.params.id);
@@ -109,7 +109,7 @@ exports.deleteTransaction = async (req, res) => {
 };
 
 //@route PUT  /api/transactions/:id  (full replace, not partial)
-exports.updateTransaction = async (req, res) => {
+const updateTransaction = async (req, res) => {
   const { type, amount, description, date } = req.body;
   try {
     // 1. update the document
@@ -131,3 +131,5 @@ exports.updateTransaction = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export {createTransaction, getTransactionsByCustomer, deleteTransaction, updateTransaction};

@@ -4,7 +4,7 @@ import Customer from "../models/Customer";
 // @desc    Create new customer
 // @route   POST /api/customers
 // @access  Private
-exports.createCustomer = async (req, res) => {
+const createCustomer = async (req, res) => {
   // ── validate input ────────────────────────────────────────────
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -29,7 +29,7 @@ exports.createCustomer = async (req, res) => {
 // @desc    Get all customers
 // @route   GET /api/customers
 // @access  Private
-exports.getAllCustomers = async (req, res) => {
+const getAllCustomers = async (req, res) => {
   try {
     //case insensitive alphabetical sorting by name
     const customers = await Customer.find()
@@ -46,7 +46,7 @@ exports.getAllCustomers = async (req, res) => {
 // @desc    Get one customer by ID
 // @route   GET /api/customers/:id
 // @access  Private
-exports.getCustomerById = async (req, res) => {
+const getCustomerById = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
     if (!customer)
@@ -63,7 +63,7 @@ exports.getCustomerById = async (req, res) => {
 // @desc    Update customer
 // @route   PUT /api/customers/:id
 // @access  Private
-exports.updateCustomer = async (req, res) => {
+const updateCustomer = async (req, res) => {
   const { name, phone, address } = req.body;
 
   try {
@@ -87,7 +87,7 @@ exports.updateCustomer = async (req, res) => {
 // @desc    Delete customer
 // @route   DELETE /api/customers/:id
 // @access  Private
-exports.deleteCustomer = async (req, res) => {
+const deleteCustomer = async (req, res) => {
   try {
     const customer = await Customer.findByIdAndDelete(req.params.id);
     if (!customer)
@@ -100,3 +100,5 @@ exports.deleteCustomer = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export {createCustomer, getAllCustomers, getCustomerById, updateCustomer, deleteCustomer}

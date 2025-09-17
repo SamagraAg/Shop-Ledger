@@ -43,4 +43,4 @@ router.put(
   updateTransaction
 );
 
-module.exports = router;
+export default router;

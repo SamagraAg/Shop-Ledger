@@ -35,4 +35,4 @@ router.put("/:id", auth, customerValidation, updateCustomer);
 // DELETE
 router.delete("/:id", auth, deleteCustomer);
 
-module.exports = router;
+export default router;

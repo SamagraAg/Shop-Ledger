@@ -29,4 +29,4 @@ customerSchema.virtual("transactions", {
   justOne: false,
 });
 
-module.exports = mongoose.model("Customer", customerSchema);
+export default mongoose.model("Customer", customerSchema);
