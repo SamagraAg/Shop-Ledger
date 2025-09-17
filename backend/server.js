@@ -1,12 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/database");
-const path = require("path");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import connectDB from "./config/database.js";
+import path from "path";
+import dotenv from "dotenv";
 
-const User = require("./models/User.js");
-const Customer = require("./models/Customer.js");
-const Transaction = require("./models/Transaction.js");
+import User from "./models/User.js";
+import Customer from "./models/Customer.js";
+import Transaction from "./models/Transaction.js";
+
+dotenv.config();
 
 // Connect to database
 connectDB();
