@@ -3,6 +3,9 @@ import cors from "cors";
 import connectDB from "./config/database.js";
 import path from "path";
 import dotenv from "dotenv";
+import authRouter from "./routes/auth.js"
+import customersRouter from "./routes/customers.js"
+import transactionsRouter from "./routes/transactions.js"
 
 import User from "./models/User.js";
 import Customer from "./models/Customer.js";
@@ -22,9 +25,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/auth", require("./routes/auth.js"));
-app.use("/api/customers", require("./routes/customers.js"));
-app.use("/api/transactions", require("./routes/transactions.js"));
+app.use(authRouter);
+app.use(customersRouter);
+app.use(transactionsRouter);
 
 app.use(express.static(path.join(__dirname, "/client/build")));
 
